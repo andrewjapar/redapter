@@ -1,0 +1,2 @@
+include ':app', ':annotations', ':compiler'
+rootProject.name='Redapter'
