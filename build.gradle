@@ -30,4 +30,5 @@ task clean(type: Delete) {
 ext {
     support_annotation = '1.0.0'
     kotlin_poet = '1.3.0'
+    auto_service = '1.0-rc4'
 }
