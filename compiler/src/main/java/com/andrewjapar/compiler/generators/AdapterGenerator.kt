@@ -17,6 +17,8 @@ class AdapterGenerator(
             val generatedAdapterName = generateAdapterName(className)
 
             val typeSpec = generateClassBuilder(generatedAdapterName)
+            typeSpec.addProperty(generateItem())
+            typeSpec.addProperty(generateListener())
             typeSpec.addFunction(generateOnCreateViewHolder(viewHolders).build())
 
             val kotlinFile = FileSpec.builder(packageName, generatedAdapterName)
@@ -28,7 +30,7 @@ class AdapterGenerator(
     }
 
     private fun generateClassBuilder(name: String) =
-        TypeSpec.classBuilder(name)
+        TypeSpec.classBuilder(name).addTypeVariable(TypeVariableName("T"))
             .superclass(ADAPTER.plusParameter(VIEW_HOLDER))
             .addModifiers(KModifier.ABSTRACT)
             .addModifiers(KModifier.PUBLIC)
@@ -62,6 +64,24 @@ class AdapterGenerator(
         return methodSpec
     }
 
+    private fun generateItem(): PropertySpec {
+        return PropertySpec.builder("data", LIST.plusParameter(TypeVariableName("T")))
+            .mutable()
+            .initializer("emptyList()")
+            .build()
+    }
+
+    private fun generateListener(): PropertySpec {
+        val predicate = LambdaTypeName.get(
+            parameters = *arrayOf(TypeVariableName("T")),
+            returnType = Unit::class.asClassName()
+        )
+        return PropertySpec.builder("itemListener", predicate)
+            .mutable()
+            .initializer("{}")
+            .build()
+    }
+
     private fun generateAdapterName(className: ClassName) =
         className.simpleName + "_Helper"
 
@@ -72,6 +92,7 @@ class AdapterGenerator(
         private val VIEW_HOLDER: ClassName =
             ClassName("androidx.recyclerview.widget", "RecyclerView", "ViewHolder")
         private val LAYOUT_INFLATER: ClassName = ClassName("android.view", "LayoutInflater")
+        private val LIST: ClassName = ClassName("kotlin.collections", "List")
         private val VIEW: ClassName = ClassName("android.view", "View")
     }
 }
