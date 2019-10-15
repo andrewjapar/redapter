@@ -1,11 +1,11 @@
-package com.andrewjapar.redapter
+package com.andrewjapar.sample
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.andrewjapar.redapter.utils.AvatarRandomizerImpl
-import com.andrewjapar.redapter.viewentity.UserInfoViewEntity
+import com.andrewjapar.sample.utils.AvatarRandomizerImpl
+import com.andrewjapar.sample.viewentity.UserInfoViewEntity
 import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {

@@ -1,4 +1,4 @@
-package com.andrewjapar.redapter
+package com.andrewjapar.sample
 
 import org.junit.Test
 

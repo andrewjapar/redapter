@@ -1,4 +1,4 @@
-package com.andrewjapar.redapter.utils
+package com.andrewjapar.sample.utils
 
 import java.net.URL
 import java.util.*

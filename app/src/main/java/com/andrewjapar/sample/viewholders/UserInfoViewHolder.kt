@@ -1,13 +1,12 @@
-package com.andrewjapar.redapter.viewholders
+package com.andrewjapar.sample.viewholders
 
-import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.os.AsyncTask
 import android.view.View
 import androidx.recyclerview.widget.RecyclerView
 import com.andrewjapar.annotations.BindLayout
-import com.andrewjapar.redapter.R
-import com.andrewjapar.redapter.viewentity.UserInfoViewEntity
+import com.andrewjapar.sample.R
+import com.andrewjapar.sample.viewentity.UserInfoViewEntity
 import kotlinx.android.synthetic.main.item_user_info.view.*
 
 

@@ -1,4 +1,4 @@
-package com.andrewjapar.redapter.viewentity
+package com.andrewjapar.sample.viewentity
 
 import java.net.URL
 
