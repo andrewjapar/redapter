@@ -11,6 +11,7 @@ import javax.lang.model.SourceVersion
 import javax.lang.model.element.Element
 import javax.lang.model.element.ElementKind
 import javax.lang.model.element.TypeElement
+import javax.lang.model.type.MirroredTypeException
 import javax.lang.model.type.MirroredTypesException
 import javax.lang.model.type.TypeMirror
 import javax.tools.Diagnostic
@@ -53,22 +54,26 @@ class RedapterProcessor : AbstractProcessor() {
         return true
     }
 
-    private fun getViewHolderLayout(roundEnvironment: RoundEnvironment): Map<ClassName, Int> {
+    private fun getViewHolderLayout(roundEnvironment: RoundEnvironment): Map<ClassName, Pair<Int, ClassName>> {
         return roundEnvironment.getElementsAnnotatedWith(BindLayout::class.java)
+            .asSequence()
             .filter { it.kind == ElementKind.CLASS }
             .associate {
                 val className = getClassName(it)
-                val layoutRes = it.getAnnotation(BindLayout::class.java).layout
-                Pair(className, layoutRes)
+                val annotatedElement = it.getAnnotation(BindLayout::class.java)
+                val layoutRes = annotatedElement.layout
+                val model = getClassName(annotatedElement)
+                Pair(className, Pair(layoutRes, model))
             }
     }
 
     private fun getAnnotatedAdapter(
         roundEnvironment: RoundEnvironment,
-        layoutMap: Map<ClassName, Int>
+        layoutMap: Map<ClassName, Pair<Int, ClassName>>
     ): Map<ClassName, List<ViewHolderInfo>> {
 
         return roundEnvironment.getElementsAnnotatedWith(BindViewHolder::class.java)
+            .asSequence()
             .filter { it.kind == ElementKind.CLASS }
             .associate { element ->
                 val adapterClassName = getClassName(element.asType())
@@ -81,7 +86,7 @@ class RedapterProcessor : AbstractProcessor() {
 
     private fun getBindViewHolders(
         annotationValue: BindViewHolder,
-        layoutMap: Map<ClassName, Int>
+        layoutMap: Map<ClassName, Pair<Int, ClassName>>
     ): List<ViewHolderInfo> {
         return try {
             annotationValue.viewHolders.map { it.asClassName() }
@@ -89,13 +94,23 @@ class RedapterProcessor : AbstractProcessor() {
             e.typeMirrors.map { getClassName(it) }
         }
             .filter { layoutMap[it] != null }
-            .map {
+            .map { viewHolderClassName ->
+                if (layoutMap[viewHolderClassName] == null) error(ERROR_NO_LAYOUT_BIND)
+
                 ViewHolderInfo(
-                    it, layoutMap[it] ?: error(
-                        ERROR_NO_LAYOUT_BIND
-                    )
+                    viewHolderClassName,
+                    layoutMap.getValue(viewHolderClassName).first,
+                    layoutMap.getValue(viewHolderClassName).second
                 )
             }
+    }
+
+    private fun getClassName(annotationValue: BindLayout): ClassName {
+        return try {
+            annotationValue.model.asClassName()
+        } catch (e: MirroredTypeException) {
+            getClassName(e.typeMirror)
+        }
     }
 
     private fun getClassName(typeMirror: TypeMirror): ClassName {
@@ -117,7 +132,8 @@ class RedapterProcessor : AbstractProcessor() {
 
     data class ViewHolderInfo(
         val className: ClassName,
-        val layoutResId: Int
+        val layoutResId: Int,
+        val modelClass: ClassName
     )
 
     companion object {

@@ -1,0 +1,3 @@
+package com.andrewjapar.annotations
+
+interface RedapterModel

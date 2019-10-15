@@ -17,9 +17,10 @@ class AdapterGenerator(
             val generatedAdapterName = generateAdapterName(className)
 
             val typeSpec = generateClassBuilder(generatedAdapterName)
-            typeSpec.addProperty(generateItem())
-            typeSpec.addProperty(generateListener())
+//            typeSpec.addProperty(generateItem())
+//            typeSpec.addProperty(generateListener())
             typeSpec.addFunction(generateOnCreateViewHolder(viewHolders).build())
+            typeSpec.addFunction(generateGetItemViewType(viewHolders))
 
             val kotlinFile = FileSpec.builder(packageName, generatedAdapterName)
                 .addType(typeSpec.build())
@@ -30,8 +31,9 @@ class AdapterGenerator(
     }
 
     private fun generateClassBuilder(name: String) =
-        TypeSpec.classBuilder(name).addTypeVariable(TypeVariableName("T"))
-            .superclass(ADAPTER.plusParameter(VIEW_HOLDER))
+//        TypeSpec.classBuilder(name).addTypeVariable(TypeVariableName("T"))
+        TypeSpec.classBuilder(name)
+            .superclass(CUSTOM_ADAPTER)
             .addModifiers(KModifier.ABSTRACT)
             .addModifiers(KModifier.PUBLIC)
 
@@ -39,7 +41,7 @@ class AdapterGenerator(
         val viewType = info.layoutResId
         beginControlFlow("$viewType ->")
             .addCode(
-                "%T(%T.from(parent.getContext()).inflate(%L, parent, false));\n",
+                "%T(%T.from(parent.getContext()).inflate(%L, parent, false))\n",
                 info.className,
                 LAYOUT_INFLATER,
                 info.layoutResId
@@ -52,13 +54,13 @@ class AdapterGenerator(
             .addModifiers(KModifier.OVERRIDE)
             .addParameter(ParameterSpec.builder("parent", VIEW_GROUP).build())
             .addParameter(ParameterSpec.builder("viewType", INT).build())
-            .returns(VIEW_HOLDER)
+            .returns(CUSTOM_VIEWHOLDER)
             .beginControlFlow("return when (viewType)")
 
         infoList.forEach { info ->
             methodSpec.generateViewHolderBlock(info)
         }
-        methodSpec.addCode("else -> throw RuntimeException(\"Not support type\" + viewType);\n")
+        methodSpec.addCode("else -> throw RuntimeException(\"Not support type\" + viewType)\n")
         methodSpec.endControlFlow()
 
         return methodSpec
@@ -82,6 +84,32 @@ class AdapterGenerator(
             .build()
     }
 
+    private fun generateGetItemViewType(infoList: List<ViewHolderInfo>): FunSpec {
+        val methodSpec = FunSpec.builder("getItemViewType")
+            .addModifiers(KModifier.OVERRIDE)
+            .addParameter(ParameterSpec.builder("position", INT).build())
+            .returns(INT)
+            .beginControlFlow("return when (data[position])")
+
+        infoList.forEach { info ->
+            methodSpec.generateViewTypeBlock(info)
+        }
+        methodSpec.addCode("else -> throw RuntimeException(\"Not support type\")\n")
+        methodSpec.endControlFlow()
+
+        return methodSpec.build()
+    }
+
+    private fun FunSpec.Builder.generateViewTypeBlock(info: ViewHolderInfo) {
+        val modelClass = info.modelClass
+        beginControlFlow("is $modelClass ->")
+            .addCode(
+                "%L\n",
+                info.layoutResId
+            )
+            .endControlFlow()
+    }
+
     private fun generateAdapterName(className: ClassName) =
         className.simpleName + "_Helper"
 
@@ -89,6 +117,13 @@ class AdapterGenerator(
         private val VIEW_GROUP: ClassName = ClassName("android.view", "ViewGroup")
         private val ADAPTER: ClassName =
             ClassName("androidx.recyclerview.widget", "RecyclerView", "Adapter")
+
+        private val CUSTOM_ADAPTER: ClassName =
+            ClassName("com.andrewjapar.redapter", "Redapter", "Adapter")
+
+        private val CUSTOM_VIEWHOLDER: ClassName =
+            ClassName("com.andrewjapar.redapter", "Redapter", "ViewHolder")
+
         private val VIEW_HOLDER: ClassName =
             ClassName("androidx.recyclerview.widget", "RecyclerView", "ViewHolder")
         private val LAYOUT_INFLATER: ClassName = ClassName("android.view", "LayoutInflater")

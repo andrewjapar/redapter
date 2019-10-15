@@ -1,5 +1,6 @@
 package com.andrewjapar.sample.viewentity
 
+import com.andrewjapar.annotations.RedapterModel
 import java.net.URL
 
 data class UserInfoViewEntity(
@@ -7,4 +8,4 @@ data class UserInfoViewEntity(
     val avatarUrl: URL,
     val domainName: String,
     val roleDescription: String
-)
+) : RedapterModel

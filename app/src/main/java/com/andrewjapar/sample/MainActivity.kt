@@ -4,8 +4,11 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.andrewjapar.annotations.BindViewHolder
+import com.andrewjapar.annotations.RedapterModel
 import com.andrewjapar.sample.utils.AvatarRandomizerImpl
 import com.andrewjapar.sample.viewentity.UserInfoViewEntity
+import com.andrewjapar.sample.viewholders.UserInfoViewHolder
 import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
@@ -22,9 +25,9 @@ class MainActivity : AppCompatActivity() {
         userList.addItemDecoration(DividerItemDecoration(this, DividerItemDecoration.VERTICAL))
     }
 
-    private fun Int.generateDummyUser(): List<UserInfoViewEntity> {
+    private fun Int.generateDummyUser(): MutableList<RedapterModel> {
         return (0..this).map {
             UserInfoViewEntity("User $it", AvatarRandomizerImpl().get(), "https://user$it.com", "Engineer $it")
-        }
+        }.toMutableList()
     }
 }

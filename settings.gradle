@@ -1,2 +1,2 @@
-include ':app', ':annotations', ':compiler'
+include ':app', ':annotations', ':compiler', ':redapter'
 rootProject.name='Redapter'
