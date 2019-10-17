@@ -14,7 +14,6 @@ import javax.lang.model.element.TypeElement
 import javax.lang.model.type.MirroredTypeException
 import javax.lang.model.type.MirroredTypesException
 import javax.lang.model.type.TypeMirror
-import javax.tools.Diagnostic
 
 @AutoService(Processor::class)
 @SupportedSourceVersion(SourceVersion.RELEASE_8)
@@ -28,7 +27,6 @@ class RedapterProcessor : AbstractProcessor() {
         super.init(processingEnvironment)
         messager = processingEnvironment.messager
         filer = processingEnvironment.filer
-        processingEnvironment.messager.printMessage(Diagnostic.Kind.NOTE, "found @Log at HERE")
     }
 
     override fun getSupportedAnnotationTypes(): MutableSet<String> = mutableSetOf(
@@ -56,8 +54,6 @@ class RedapterProcessor : AbstractProcessor() {
 
     private fun getViewHolderLayout(roundEnvironment: RoundEnvironment): Map<ClassName, Pair<Int, ClassName>> {
         return roundEnvironment.getElementsAnnotatedWith(BindLayout::class.java)
-            .asSequence()
-            .filter { it.kind == ElementKind.CLASS }
             .associate {
                 val className = getClassName(it)
                 val annotatedElement = it.getAnnotation(BindLayout::class.java)
@@ -71,17 +67,40 @@ class RedapterProcessor : AbstractProcessor() {
         roundEnvironment: RoundEnvironment,
         layoutMap: Map<ClassName, Pair<Int, ClassName>>
     ): Map<ClassName, List<ViewHolderInfo>> {
-
         return roundEnvironment.getElementsAnnotatedWith(BindViewHolder::class.java)
-            .asSequence()
-            .filter { it.kind == ElementKind.CLASS }
             .associate { element ->
-                val adapterClassName = getClassName(element.asType())
-                val viewHolders =
-                    getBindViewHolders(element.getAnnotation(BindViewHolder::class.java), layoutMap)
-
-                Pair(adapterClassName, viewHolders)
+                when (element.kind) {
+                    ElementKind.FIELD -> getAdapterField(element, layoutMap)
+                    else -> getAdapterClass(element, layoutMap)
+                }
             }
+    }
+
+    private fun getAdapterClass(
+        element: Element,
+        layoutMap: Map<ClassName, Pair<Int, ClassName>>
+    ): Pair<ClassName, List<ViewHolderInfo>> {
+        val adapterClassName = getClassName(element.asType())
+        val viewHolders =
+            getBindViewHolders(element.getAnnotation(BindViewHolder::class.java), layoutMap)
+
+        return Pair(adapterClassName, viewHolders)
+    }
+
+    private fun getAdapterField(
+        element: Element,
+        layoutMap: Map<ClassName, Pair<Int, ClassName>>
+    ): Pair<ClassName, List<ViewHolderInfo>> {
+        val declaringClassName = getClassName(element.enclosingElement.asType())
+        val fieldClassName =
+            ClassName(
+                declaringClassName.packageName,
+                "${declaringClassName.simpleName}_${element.simpleName}"
+            )
+        val viewHolders =
+            getBindViewHolders(element.getAnnotation(BindViewHolder::class.java), layoutMap)
+
+        return Pair(fieldClassName, viewHolders)
     }
 
     private fun getBindViewHolders(
@@ -138,9 +157,6 @@ class RedapterProcessor : AbstractProcessor() {
 
     companion object {
         const val KAPT_KOTLIN_GENERATED_OPTION_NAME = "kapt.kotlin.generated"
-        private const val ERROR_BIND_LAYOUT = "Only class can be annotated with BindLayout"
-        private const val ERROR_VIEW_HOLDER = "Only class can be annotated with BindHolder"
         private const val ERROR_NO_LAYOUT_BIND = "There is no layout bind in this view Holder"
-        private const val ERROR_HOLDER_CREATE = "Can't generate BindHolder"
     }
 }

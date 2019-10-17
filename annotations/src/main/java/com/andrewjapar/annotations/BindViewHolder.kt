@@ -2,7 +2,7 @@ package com.andrewjapar.annotations
 
 import kotlin.reflect.KClass
 
-@Retention(AnnotationRetention.SOURCE)
-@Target(AnnotationTarget.CLASS)
+@Retention(AnnotationRetention.RUNTIME)
+@Target(AnnotationTarget.CLASS, AnnotationTarget.FIELD)
 @MustBeDocumented
 annotation class BindViewHolder(vararg val viewHolders: KClass<out Any>)

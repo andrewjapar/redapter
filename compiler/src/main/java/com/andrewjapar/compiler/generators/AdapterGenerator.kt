@@ -34,7 +34,8 @@ class AdapterGenerator(
 //        TypeSpec.classBuilder(name).addTypeVariable(TypeVariableName("T"))
         TypeSpec.classBuilder(name)
             .superclass(CUSTOM_ADAPTER)
-            .addModifiers(KModifier.ABSTRACT)
+//            .addModifiers(KModifier.ABSTRACT)
+            .addModifiers(KModifier.OPEN)
             .addModifiers(KModifier.PUBLIC)
 
     private fun FunSpec.Builder.generateViewHolderBlock(info: ViewHolderInfo) {
