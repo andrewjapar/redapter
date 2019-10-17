@@ -2,9 +2,9 @@ package com.andrewjapar.compiler.generators
 
 import com.andrewjapar.compiler.RedapterProcessor.ViewHolderInfo
 import com.squareup.kotlinpoet.*
-import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.plusParameter
 import javax.annotation.processing.Filer
 
+@Suppress("SpellCheckingInspection")
 class AdapterGenerator(
     private val annotatedAdapter: Map<ClassName, List<ViewHolderInfo>>,
     private val filer: Filer
@@ -16,14 +16,13 @@ class AdapterGenerator(
             val packageName = className.packageName
             val generatedAdapterName = generateAdapterName(className)
 
-            val typeSpec = generateClassBuilder(generatedAdapterName)
-//            typeSpec.addProperty(generateItem())
-//            typeSpec.addProperty(generateListener())
-            typeSpec.addFunction(generateOnCreateViewHolder(viewHolders).build())
-            typeSpec.addFunction(generateGetItemViewType(viewHolders))
+            val adapterClass = generateClassBuilder(generatedAdapterName).apply {
+                addFunction(generateOnCreateViewHolder(viewHolders))
+                addFunction(generateGetItemViewType(viewHolders))
+            }.build()
 
             val kotlinFile = FileSpec.builder(packageName, generatedAdapterName)
-                .addType(typeSpec.build())
+                .addType(adapterClass)
                 .build()
 
             kotlinFile.writeTo(filer)
@@ -31,31 +30,17 @@ class AdapterGenerator(
     }
 
     private fun generateClassBuilder(name: String) =
-//        TypeSpec.classBuilder(name).addTypeVariable(TypeVariableName("T"))
         TypeSpec.classBuilder(name)
-            .superclass(CUSTOM_ADAPTER)
-//            .addModifiers(KModifier.ABSTRACT)
+            .superclass(ADAPTER)
             .addModifiers(KModifier.OPEN)
             .addModifiers(KModifier.PUBLIC)
 
-    private fun FunSpec.Builder.generateViewHolderBlock(info: ViewHolderInfo) {
-        val viewType = info.layoutResId
-        beginControlFlow("$viewType ->")
-            .addCode(
-                "%T(%T.from(parent.getContext()).inflate(%L, parent, false))\n",
-                info.className,
-                LAYOUT_INFLATER,
-                info.layoutResId
-            )
-            .endControlFlow()
-    }
-
-    private fun generateOnCreateViewHolder(infoList: List<ViewHolderInfo>): FunSpec.Builder {
+    private fun generateOnCreateViewHolder(infoList: List<ViewHolderInfo>): FunSpec {
         val methodSpec = FunSpec.builder("onCreateViewHolder")
             .addModifiers(KModifier.OVERRIDE)
             .addParameter(ParameterSpec.builder("parent", VIEW_GROUP).build())
             .addParameter(ParameterSpec.builder("viewType", INT).build())
-            .returns(CUSTOM_VIEWHOLDER)
+            .returns(VIEW_HOLDER)
             .beginControlFlow("return when (viewType)")
 
         infoList.forEach { info ->
@@ -64,25 +49,7 @@ class AdapterGenerator(
         methodSpec.addCode("else -> throw RuntimeException(\"Not support type\" + viewType)\n")
         methodSpec.endControlFlow()
 
-        return methodSpec
-    }
-
-    private fun generateItem(): PropertySpec {
-        return PropertySpec.builder("data", LIST.plusParameter(TypeVariableName("T")))
-            .mutable()
-            .initializer("emptyList()")
-            .build()
-    }
-
-    private fun generateListener(): PropertySpec {
-        val predicate = LambdaTypeName.get(
-            parameters = *arrayOf(TypeVariableName("T")),
-            returnType = Unit::class.asClassName()
-        )
-        return PropertySpec.builder("itemListener", predicate)
-            .mutable()
-            .initializer("{}")
-            .build()
+        return methodSpec.build()
     }
 
     private fun generateGetItemViewType(infoList: List<ViewHolderInfo>): FunSpec {
@@ -101,6 +68,18 @@ class AdapterGenerator(
         return methodSpec.build()
     }
 
+    private fun FunSpec.Builder.generateViewHolderBlock(info: ViewHolderInfo) {
+        val viewType = info.layoutResId
+        beginControlFlow("$viewType ->")
+            .addCode(
+                "%T(%T.from(parent.getContext()).inflate(%L, parent, false))\n",
+                info.className,
+                LAYOUT_INFLATER,
+                info.layoutResId
+            )
+            .endControlFlow()
+    }
+
     private fun FunSpec.Builder.generateViewTypeBlock(info: ViewHolderInfo) {
         val modelClass = info.modelClass
         beginControlFlow("is $modelClass ->")
@@ -116,19 +95,10 @@ class AdapterGenerator(
 
     companion object {
         private val VIEW_GROUP: ClassName = ClassName("android.view", "ViewGroup")
-        private val ADAPTER: ClassName =
-            ClassName("androidx.recyclerview.widget", "RecyclerView", "Adapter")
-
-        private val CUSTOM_ADAPTER: ClassName =
-            ClassName("com.andrewjapar.redapter", "Redapter", "Adapter")
-
-        private val CUSTOM_VIEWHOLDER: ClassName =
-            ClassName("com.andrewjapar.redapter", "Redapter", "ViewHolder")
-
-        private val VIEW_HOLDER: ClassName =
-            ClassName("androidx.recyclerview.widget", "RecyclerView", "ViewHolder")
         private val LAYOUT_INFLATER: ClassName = ClassName("android.view", "LayoutInflater")
-        private val LIST: ClassName = ClassName("kotlin.collections", "List")
-        private val VIEW: ClassName = ClassName("android.view", "View")
+        private val ADAPTER: ClassName =
+            ClassName("com.andrewjapar.redapter", "Redapter", "Adapter")
+        private val VIEW_HOLDER: ClassName =
+            ClassName("com.andrewjapar.redapter", "Redapter", "ViewHolder")
     }
 }

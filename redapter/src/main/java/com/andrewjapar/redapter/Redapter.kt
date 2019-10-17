@@ -30,9 +30,8 @@ class Redapter {
         }
 
         private fun getFieldClass(field: Field): Class<*> {
-            val packageLocation = field.declaringClass.`package`?.name
             val parentClassName = field.declaringClass.name
-            return Class.forName("$packageLocation.${parentClassName}_${field.name}_Helper")
+            return Class.forName("${parentClassName}_${field.name}_Helper")
         }
 
         private fun Field.isAnnotated(): Boolean {

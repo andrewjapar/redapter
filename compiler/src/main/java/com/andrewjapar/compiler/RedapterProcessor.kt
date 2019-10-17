@@ -15,6 +15,7 @@ import javax.lang.model.type.MirroredTypeException
 import javax.lang.model.type.MirroredTypesException
 import javax.lang.model.type.TypeMirror
 
+@Suppress("SpellCheckingInspection")
 @AutoService(Processor::class)
 @SupportedSourceVersion(SourceVersion.RELEASE_8)
 @SupportedOptions(RedapterProcessor.KAPT_KOTLIN_GENERATED_OPTION_NAME)
