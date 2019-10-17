@@ -1,6 +1,12 @@
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
+apply plugin: 'com.github.dcendents.android-maven'
+apply plugin: 'maven-publish'
+apply plugin: 'com.jfrog.bintray'
+
+group = 'com.andrewjapar.redapter'
+version = '0.1.0'
 
 android {
     compileSdkVersion 28
@@ -22,7 +28,6 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
-
 }
 
 dependencies {
@@ -30,4 +35,51 @@ dependencies {
     api project(":annotations")
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     implementation "androidx.recyclerview:recyclerview:1.0.0"
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            artifactId 'redapter'
+            groupId this.group
+            version this.version
+            artifact ("$buildDir/outputs/aar/redapter-release.aar")
+            pom {
+                name = "Redapter"
+                description = "Redapter is a lazy tool for Android to compose your Adapter and bind with any ViewHolder by adding Annotations."
+                url = "https://github.com/andrewjapar/redapter"
+                licenses {
+                    license {
+                        name = "MIT"
+                        url = "http://www.opensource.org/licenses/mit-license.php"
+                    }
+                }
+                developers {
+                    developer {
+                        id = "andrewjapar"
+                        name = "Andrew Japar"
+                        email = "andrewjap.dev@gmail.com"
+                    }
+                }
+                scm {
+                    connection = "scm:git:https://github.com/andrewjapar/redapter.git"
+                    developerConnection = "scm:git:https://github.com/andrewjapar/redapter.git"
+                    url = "https://github.com/andrewjapar/redapter"
+                }
+            }
+        }
+    }
+}
+
+bintray {
+    user = project.getProperty("BINTRAY_USER")
+    key = project.getProperty("BINTRAY_KEY")
+    publications = ['mavenJava']
+    pkg {
+        repo = 'Android'
+        name = 'Redapter'
+
+        vcsUrl = 'https://github.com/andrewjapar/redapter.git'
+        licenses = ['MIT']
+    }
 }
