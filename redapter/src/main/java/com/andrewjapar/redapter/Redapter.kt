@@ -21,7 +21,7 @@ class Redapter {
                     if (field.isAnnotated()) {
                         try {
                             field.isAccessible = true
-                            field.set(obj, getFieldClass(field).newInstance())
+                            field.set(obj, field.getClass().newInstance())
                         } catch (e: IllegalAccessException) {
                             e.printStackTrace()
                         }
@@ -29,13 +29,13 @@ class Redapter {
                 }
         }
 
-        private fun getFieldClass(field: Field): Class<*> {
-            val parentClassName = field.declaringClass.name
-            return Class.forName("${parentClassName}_${field.name}_Helper")
+        private fun Field.getClass(): Class<*> {
+            val parentClassName = this.declaringClass.name
+            return Class.forName("${parentClassName}_${this.name}_Helper")
         }
 
         private fun Field.isAnnotated(): Boolean {
-            return this.getAnnotation(BindViewHolder::class.java) != null
+            return this.isAnnotationPresent(BindViewHolder::class.java)
         }
     }
 
