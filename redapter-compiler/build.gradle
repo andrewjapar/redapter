@@ -1,28 +1,35 @@
 apply plugin: 'java-library'
 apply plugin: 'kotlin'
+apply plugin: 'kotlin-kapt'
 apply plugin: 'com.github.dcendents.android-maven'
 apply plugin: 'maven-publish'
 apply plugin: 'com.jfrog.bintray'
 
 dependencies {
+    implementation project(':redapter-annotations')
+
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
-    implementation "androidx.annotation:annotation:$support_annotation"
-}
 
-sourceCompatibility = "8"
-targetCompatibility = "8"
+    implementation "com.squareup:kotlinpoet:$kotlin_poet"
+
+    implementation "com.google.auto.service:auto-service:$auto_service"
+    kapt "com.google.auto.service:auto-service:$auto_service"
+}
 
 group = 'com.andrewjapar.redapter'
 version = '0.1.0-alpha1'
 
+sourceCompatibility = "8"
+targetCompatibility = "8"
+
 ext {
     bintrayRepo = 'Android'
-    bintrayName = 'Redapter-Annotations'
+    bintrayName = 'Redapter-Compiler'
 
     publishedGroupId = this.group
-    libraryName = 'Redapter-Annotations'
-    artifact = 'annotations'
+    libraryName = 'Redapter-Compiler'
+    artifact = 'redapter-compiler'
 
     libraryDescription = "Redapter is a lazy tool for Android to compose your Adapter and bind with any ViewHolder by adding Annotations."
 

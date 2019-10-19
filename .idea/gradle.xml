@@ -8,10 +8,10 @@
         <option name="modules">
           <set>
             <option value="$PROJECT_DIR$" />
-            <option value="$PROJECT_DIR$/annotations" />
             <option value="$PROJECT_DIR$/app" />
-            <option value="$PROJECT_DIR$/compiler" />
             <option value="$PROJECT_DIR$/redapter" />
+            <option value="$PROJECT_DIR$/redapter-annotations" />
+            <option value="$PROJECT_DIR$/redapter-compiler" />
           </set>
         </option>
         <option name="resolveModulePerSourceSet" value="false" />
