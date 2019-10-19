@@ -29,7 +29,7 @@ ext {
 
     publishedGroupId = this.group
     libraryName = 'Redapter-Compiler'
-    artifact = 'redapter-compiler'
+    artifact = 'compiler'
 
     libraryDescription = "Redapter is a lazy tool for Android to compose your Adapter and bind with any ViewHolder by adding Annotations."
 

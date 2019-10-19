@@ -1,8 +1,8 @@
 apply plugin: 'java-library'
 apply plugin: 'kotlin'
 apply plugin: 'com.github.dcendents.android-maven'
-
-group = 'com.andrewjapar.redapter'
+apply plugin: 'maven-publish'
+apply plugin: 'com.jfrog.bintray'
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
@@ -12,3 +12,34 @@ dependencies {
 
 sourceCompatibility = "8"
 targetCompatibility = "8"
+
+group = 'com.andrewjapar.redapter'
+version = '0.1.0-alpha1'
+
+ext {
+    bintrayRepo = 'Android'
+    bintrayName = 'Redapter-Annotations'
+
+    publishedGroupId = this.group
+    libraryName = 'Redapter-Annotations'
+    artifact = 'annotations'
+
+    libraryDescription = "Redapter is a lazy tool for Android to compose your Adapter and bind with any ViewHolder by adding Annotations."
+
+    siteUrl = 'https://github.com/andrewjapar/redapter'
+    gitUrl = 'https://github.com/andrewjapar/redapter.git'
+    developerConnection = 'https://github.com/andrewjapar/redapter.git'
+
+    libraryVersion = this.version
+
+    developerId = 'andrewjapar'
+    developerName = 'Andrew Japar'
+    developerEmail = 'andrewjap.dev@gmail.com'
+
+    licenseName = 'MIT'
+    licenseUrl = 'http://www.opensource.org/licenses/mit-license.php'
+    allLicenses = ["MIT"]
+}
+
+apply from: 'https://raw.githubusercontent.com/nuuneoi/JCenter/master/installv1.gradle'
+apply from: 'https://raw.githubusercontent.com/nuuneoi/JCenter/master/bintrayv1.gradle'
