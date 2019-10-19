@@ -1,4 +1,4 @@
-<img src="https://github.com/andrewjapar/redapter/blob/master/images/redapter-logo.png" width="250">
+<img src="https://github.com/andrewjapar/redapter/blob/master/images/redapter-trim.jpg" width="250">
 
 [![Release](https://api.bintray.com/packages/andrewjapar/Android/Redapter/images/download.svg)](https://bintray.com/andrewjapar/Android/Redapter/_latestVersion)
 
