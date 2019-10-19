@@ -32,7 +32,7 @@ sealed class UserInfo: RedapterModel {
 }
 ```
 ### 2. Create your view holder
-Create a class which implements `Redapter.ViewHolder` and annotate it with `@BindLayout`. They you have to override `onBind` function in order to implement click listener and consume the data model.
+Create a class which implements `Redapter.ViewHolder` and annotate it with `@BindLayout`. Then you have to override `onBind` function in order to implement click listener and consume the data model.
 ```kotlin
 @BindLayout(layout = R.layout.item_user_info, model = UserInfo.Portrait::class)
 class PortraitUserInfoViewHolder(view: View) : Redapter.ViewHolder(view) {
