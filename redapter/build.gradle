@@ -37,49 +37,34 @@ dependencies {
     implementation "androidx.recyclerview:recyclerview:1.0.0"
 }
 
-publishing {
-    publications {
-        mavenJava(MavenPublication) {
-            artifactId 'redapter'
-            groupId this.group
-            version this.version
-            artifact ("$buildDir/outputs/aar/redapter-release.aar")
-            pom {
-                name = "Redapter"
-                description = "Redapter is a lazy tool for Android to compose your Adapter and bind with any ViewHolder by adding Annotations."
-                url = "https://github.com/andrewjapar/redapter"
-                licenses {
-                    license {
-                        name = "MIT"
-                        url = "http://www.opensource.org/licenses/mit-license.php"
-                    }
-                }
-                developers {
-                    developer {
-                        id = "andrewjapar"
-                        name = "Andrew Japar"
-                        email = "andrewjap.dev@gmail.com"
-                    }
-                }
-                scm {
-                    connection = "scm:git:https://github.com/andrewjapar/redapter.git"
-                    developerConnection = "scm:git:https://github.com/andrewjapar/redapter.git"
-                    url = "https://github.com/andrewjapar/redapter"
-                }
-            }
-        }
-    }
+tasks.withType(Javadoc) {
+    enabled = false
 }
 
-bintray {
-    user = project.getProperty("BINTRAY_USER")
-    key = project.getProperty("BINTRAY_KEY")
-    publications = ['mavenJava']
-    pkg {
-        repo = 'Android'
-        name = 'Redapter'
+ext {
+    bintrayRepo = 'Android'
+    bintrayName = 'Redapter'
 
-        vcsUrl = 'https://github.com/andrewjapar/redapter.git'
-        licenses = ['MIT']
-    }
+    publishedGroupId = this.group
+    libraryName = 'Redapter'
+    artifact = 'redapter'
+
+    libraryDescription = "Redapter is a lazy tool for Android to compose your Adapter and bind with any ViewHolder by adding Annotations."
+
+    siteUrl = 'https://github.com/andrewjapar/redapter'
+    gitUrl = 'https://github.com/andrewjapar/redapter.git'
+    developerConnection = 'https://github.com/andrewjapar/redapter.git'
+
+    libraryVersion = this.version
+
+    developerId = 'andrewjapar'
+    developerName = 'Andrew Japar'
+    developerEmail = 'andrewjap.dev@gmail.com'
+
+    licenseName = 'MIT'
+    licenseUrl = 'http://www.opensource.org/licenses/mit-license.php'
+    allLicenses = ["MIT"]
 }
+
+apply from: 'https://raw.githubusercontent.com/nuuneoi/JCenter/master/installv1.gradle'
+apply from: 'https://raw.githubusercontent.com/nuuneoi/JCenter/master/bintrayv1.gradle'
