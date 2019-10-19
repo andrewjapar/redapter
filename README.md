@@ -25,7 +25,7 @@ Just simply create a class which implements the `RedapterModel`
 data class UserInfo(val name: String): RedapterModel
 ```
 #### For multi view type
-```
+```kotlin
 sealed class UserInfo: RedapterModel {
     data class Portrait(val image: String): UserInfo()
     data class Landscape(val name: String): UserInfo()
