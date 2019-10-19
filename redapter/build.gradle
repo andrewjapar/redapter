@@ -6,7 +6,7 @@ apply plugin: 'maven-publish'
 apply plugin: 'com.jfrog.bintray'
 
 group = 'com.andrewjapar.redapter'
-version = '0.1.0-alpha1'
+version = '0.1.0'
 
 android {
     compileSdkVersion 28

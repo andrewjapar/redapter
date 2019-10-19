@@ -14,7 +14,7 @@ sourceCompatibility = "8"
 targetCompatibility = "8"
 
 group = 'com.andrewjapar.redapter'
-version = '0.1.0-alpha1'
+version = '0.1.0'
 
 ext {
     bintrayRepo = 'Android'

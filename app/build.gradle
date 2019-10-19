@@ -36,9 +36,6 @@ dependencies {
     androidTestImplementation 'androidx.test:runner:1.2.0'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
 
-    implementation 'com.andrewjapar.redapter:redapter:0.1.0-alpha1'
-    kapt 'com.andrewjapar.redapter:redapter-compiler:0.1.0-alpha1'
-
-//    implementation project(":redapter")
-//    kapt project(':redapter-compiler')
+    implementation project(":redapter")
+    kapt project(':redapter-compiler')
 }

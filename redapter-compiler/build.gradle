@@ -18,7 +18,7 @@ dependencies {
 }
 
 group = 'com.andrewjapar.redapter'
-version = '0.1.0-alpha1'
+version = '0.1.0'
 
 sourceCompatibility = "8"
 targetCompatibility = "8"
